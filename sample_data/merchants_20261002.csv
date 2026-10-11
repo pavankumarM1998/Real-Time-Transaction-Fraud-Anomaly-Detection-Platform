@@ -1,0 +1,6 @@
+merchant_id,merchant_name,merchant_category,merchant_country,merchant_state,merchant_city,merchant_status,merchant_risk_level,chargeback_rate,fraud_rate,created_at,updated_at
+MERCH_101,QuickMart Groceries,GROCERY,US,CA,San Francisco,ACTIVE,LOW,0.002,0.001,2021-01-10 10:00:00,2026-10-01 10:00:00
+MERCH_102,Apex Electronics,ELECTRONICS,US,NY,New York,ACTIVE,MEDIUM,0.015,0.008,2020-05-15 11:00:00,2026-10-01 10:00:00
+MERCH_103,Global Luxury Jewels,LUXURY,US,TX,Dallas,ACTIVE,HIGH,0.045,0.032,2019-11-20 14:00:00,2026-10-01 10:00:00
+MERCH_104,CloudFlight Travel,TRAVEL,US,FL,Miami,ACTIVE,MEDIUM,0.022,0.012,2022-02-01 09:30:00,2026-10-01 10:00:00
+MERCH_105,ShadyGadgets Online,ONLINE_RETAIL,US,NV,Las Vegas,BLOCKED,HIGH,0.085,0.065,2023-08-12 15:45:00,2026-10-01 10:00:00

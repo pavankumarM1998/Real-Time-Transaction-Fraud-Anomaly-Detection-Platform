@@ -1,0 +1,6 @@
+customer_id,customer_name,date_of_birth,customer_since,customer_status,home_country,home_state,home_city,preferred_currency,customer_risk_level,avg_monthly_spend,avg_transaction_amount,created_at,updated_at
+CUST_001,Alice Smith,1985-04-12,2020-01-15,ACTIVE,US,CA,San Francisco,USD,LOW,4500.0,150.0,2020-01-15 09:00:00,2026-10-01 10:00:00
+CUST_002,Bob Johnson,1990-08-23,2021-03-10,ACTIVE,US,NY,New York,USD,MEDIUM,3200.0,85.0,2021-03-10 11:30:00,2026-10-01 10:00:00
+CUST_003,Charlie Davis,1978-11-05,2019-07-22,ACTIVE,US,TX,Austin,USD,HIGH,7800.0,260.0,2019-07-22 14:15:00,2026-10-01 10:00:00
+CUST_004,Diana Prince,1995-12-19,2022-05-18,ACTIVE,US,WA,Seattle,USD,LOW,5100.0,120.0,2022-05-18 08:45:00,2026-10-01 10:00:00
+CUST_005,Evan Wright,1982-03-30,2018-09-01,SUSPENDED,US,IL,Chicago,USD,HIGH,12000.0,400.0,2018-09-01 16:20:00,2026-10-01 10:00:00

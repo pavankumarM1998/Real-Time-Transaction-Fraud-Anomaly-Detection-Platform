@@ -1,0 +1,133 @@
+resources:
+  jobs:
+    fraud_master_pipeline_job:
+      name: "[Fraud Platform] 99 - End-to-End Master Pipeline"
+      queue:
+        enabled: true
+      tasks:
+        # Step 1: Environment Setup
+        - task_key: 00_environment_setup
+          notebook_task:
+            notebook_path: ../notebooks/00_project_setup.sql
+
+        # Step 2: Staging Validation
+        - task_key: 01_staging_validation
+          depends_on:
+            - task_key: 00_environment_setup
+          notebook_task:
+            notebook_path: ../notebooks/01_staging_validation.py
+
+        # Step 3: Reference Ingestion
+        - task_key: 02_reference_customers_bronze
+          depends_on:
+            - task_key: 01_staging_validation
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: customers
+
+        - task_key: 02_reference_merchants_bronze
+          depends_on:
+            - task_key: 01_staging_validation
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: merchants
+
+        - task_key: 02_reference_fraud_labels_bronze
+          depends_on:
+            - task_key: 01_staging_validation
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: fraud_labels
+
+        # Step 4: Reference Silver Standardization
+        - task_key: 06_silver_customers
+          depends_on:
+            - task_key: 02_reference_customers_bronze
+          notebook_task:
+            notebook_path: ../notebooks/06_reference_silver.py
+            base_parameters:
+              ENTITY: customers
+
+        - task_key: 06_silver_merchants
+          depends_on:
+            - task_key: 02_reference_merchants_bronze
+          notebook_task:
+            notebook_path: ../notebooks/06_reference_silver.py
+            base_parameters:
+              ENTITY: merchants
+
+        # Step 5: Streaming Bronze Transactions
+        - task_key: 03_bronze_transaction_stream
+          depends_on:
+            - task_key: 01_staging_validation
+          notebook_task:
+            notebook_path: ../notebooks/03_bronze_transaction_stream.py
+
+        # Step 6: Streaming Silver Micro-Batch
+        - task_key: 04_silver_transaction_stream
+          depends_on:
+            - task_key: 03_bronze_transaction_stream
+          notebook_task:
+            notebook_path: ../notebooks/04_silver_transaction_stream.py
+
+        # Step 7: Streaming Fraud Rule & Watermarking
+        - task_key: 05_fraud_rule_processing
+          depends_on:
+            - task_key: 04_silver_transaction_stream
+          notebook_task:
+            notebook_path: ../notebooks/05_fraud_processing.py
+
+        # Step 8: Feature Enrichment
+        - task_key: 07_transaction_enrichment
+          depends_on:
+            - task_key: 05_fraud_rule_processing
+            - task_key: 06_silver_customers
+            - task_key: 06_silver_merchants
+          notebook_task:
+            notebook_path: ../notebooks/07_transaction_enrichment.py
+
+        # Step 9: Velocity Windows & Feature Assembly
+        - task_key: 08_fraud_feature_assembly
+          depends_on:
+            - task_key: 07_transaction_enrichment
+          notebook_task:
+            notebook_path: ../notebooks/08_fraud_feature_assembly.py
+
+        # Step 10: ML Model Training & Registration
+        - task_key: 09_ml_training
+          depends_on:
+            - task_key: 02_reference_fraud_labels_bronze
+          notebook_task:
+            notebook_path: ../notebooks/09_ml_training_v2.py
+
+        # Step 11: Real-Time Inference
+        - task_key: 10_streaming_inference
+          depends_on:
+            - task_key: 08_fraud_feature_assembly
+            - task_key: 09_ml_training
+          notebook_task:
+            notebook_path: ../notebooks/10_streaming_inference.py
+
+        # Step 12: Gold Layer Build
+        - task_key: 11_gold_fraud_decisions
+          depends_on:
+            - task_key: 10_streaming_inference
+          notebook_task:
+            notebook_path: ../notebooks/11_gold_fraud.py
+
+        # Step 13: Reconciliation & Archive
+        - task_key: 12_reconciliation_archive
+          depends_on:
+            - task_key: 11_gold_fraud_decisions
+          notebook_task:
+            notebook_path: ../notebooks/12_reconciliation_archive.py
+
+        # Step 14: Health & Operational Monitoring
+        - task_key: 14_monitoring
+          depends_on:
+            - task_key: 12_reconciliation_archive
+          notebook_task:
+            notebook_path: ../notebooks/14_monitoring.py

@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    fraud_streaming_bronze_silver_job:
+      name: "[Fraud Platform] 02 - Real-Time Transaction Streaming (Bronze & Silver)"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: bronze_transaction_autoloader_stream
+          notebook_task:
+            notebook_path: ../notebooks/03_bronze_transaction_stream.py
+
+        - task_key: silver_transaction_microbatch_stream
+          depends_on:
+            - task_key: bronze_transaction_autoloader_stream
+          notebook_task:
+            notebook_path: ../notebooks/04_silver_transaction_stream.py
+
+        - task_key: silver_fraud_rule_watermark_stream
+          depends_on:
+            - task_key: silver_transaction_microbatch_stream
+          notebook_task:
+            notebook_path: ../notebooks/05_fraud_processing.py

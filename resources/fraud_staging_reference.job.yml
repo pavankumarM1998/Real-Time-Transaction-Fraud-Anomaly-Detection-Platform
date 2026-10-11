@@ -1,0 +1,50 @@
+resources:
+  jobs:
+    fraud_staging_reference_job:
+      name: "[Fraud Platform] 01 - Reference Data Ingestion & Staging Validation"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: validate_staging_files
+          notebook_task:
+            notebook_path: ../notebooks/01_staging_validation.py
+
+        - task_key: ingest_customers_bronze
+          depends_on:
+            - task_key: validate_staging_files
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: customers
+
+        - task_key: ingest_merchants_bronze
+          depends_on:
+            - task_key: validate_staging_files
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: merchants
+
+        - task_key: ingest_fraud_labels_bronze
+          depends_on:
+            - task_key: validate_staging_files
+          notebook_task:
+            notebook_path: ../notebooks/02_reference_ingestion.py
+            base_parameters:
+              ENTITY: fraud_labels
+
+        - task_key: silver_customers_standardization
+          depends_on:
+            - task_key: ingest_customers_bronze
+          notebook_task:
+            notebook_path: ../notebooks/06_reference_silver.py
+            base_parameters:
+              ENTITY: customers
+
+        - task_key: silver_merchants_standardization
+          depends_on:
+            - task_key: ingest_merchants_bronze
+          notebook_task:
+            notebook_path: ../notebooks/06_reference_silver.py
+            base_parameters:
+              ENTITY: merchants

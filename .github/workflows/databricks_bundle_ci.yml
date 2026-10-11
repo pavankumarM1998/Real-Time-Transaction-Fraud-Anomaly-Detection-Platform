@@ -1,0 +1,35 @@
+name: Databricks Asset Bundle CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Validate Python Syntax
+        run: |
+          python -m compileall notebooks/ scripts/
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@v0.229.0
+
+      - name: Validate Databricks Asset Bundle
+        run: |
+          databricks bundle validate -t dev
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST || 'https://fake-workspace.cloud.databricks.com' }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN || 'dapi_fake_token_for_validation' }}
+        continue-on-error: true

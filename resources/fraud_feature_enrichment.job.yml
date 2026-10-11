@@ -1,0 +1,16 @@
+resources:
+  jobs:
+    fraud_feature_enrichment_job:
+      name: "[Fraud Platform] 03 - Transaction Feature Enrichment & Velocity Windows"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: transaction_feature_enrichment
+          notebook_task:
+            notebook_path: ../notebooks/07_transaction_enrichment.py
+
+        - task_key: fraud_feature_velocity_assembly
+          depends_on:
+            - task_key: transaction_feature_enrichment
+          notebook_task:
+            notebook_path: ../notebooks/08_fraud_feature_assembly.py

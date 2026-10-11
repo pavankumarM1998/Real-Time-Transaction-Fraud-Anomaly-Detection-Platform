@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    fraud_ml_inference_gold_job:
+      name: "[Fraud Platform] 04 - ML Training, Real-Time Inference & Gold Layer"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: train_and_register_fraud_model
+          notebook_task:
+            notebook_path: ../notebooks/09_ml_training_v2.py
+
+        - task_key: real_time_streaming_inference
+          depends_on:
+            - task_key: train_and_register_fraud_model
+          notebook_task:
+            notebook_path: ../notebooks/10_streaming_inference.py
+
+        - task_key: build_gold_fraud_decisions
+          depends_on:
+            - task_key: real_time_streaming_inference
+          notebook_task:
+            notebook_path: ../notebooks/11_gold_fraud.py

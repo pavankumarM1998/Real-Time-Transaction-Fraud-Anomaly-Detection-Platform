@@ -1,0 +1,16 @@
+resources:
+  jobs:
+    fraud_reconciliation_archive_job:
+      name: "[Fraud Platform] 05 - Cross-Layer Reconciliation & Operational Auditing"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: cross_layer_reconciliation_and_archive
+          notebook_task:
+            notebook_path: ../notebooks/12_reconciliation_archive.py
+
+        - task_key: operational_health_monitoring
+          depends_on:
+            - task_key: cross_layer_reconciliation_and_archive
+          notebook_task:
+            notebook_path: ../notebooks/14_monitoring.py

@@ -1,0 +1,10 @@
+resources:
+  jobs:
+    fraud_setup_job:
+      name: "[Fraud Platform] 00 - Environment & Unity Catalog Setup"
+      queue:
+        enabled: true
+      tasks:
+        - task_key: setup_catalog_and_schemas
+          notebook_task:
+            notebook_path: ../notebooks/00_project_setup.sql
