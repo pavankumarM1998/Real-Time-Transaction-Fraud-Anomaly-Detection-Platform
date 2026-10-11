@@ -33,6 +33,7 @@ Real-Time-Transaction-Fraud-Anomaly-Detection-Platform/
 │       └── verify_file_processing.sql      # Ingestion status and reconciliation verification
 │
 ├── resources/                              # Databricks Asset Bundle (DAB) Workflow / Job YAMLs
+│   ├── fraud_transaction_pipeline.job.yml  # Official performance-optimized transaction pipeline (9 tasks)
 │   ├── fraud_setup.job.yml                 # Environment & Unity Catalog initialization workflow
 │   ├── fraud_staging_reference.job.yml     # Reference data ingestion & staging validation workflow
 │   ├── fraud_streaming_bronze_silver.job.yml # Real-time streaming Bronze & Silver workflow
@@ -140,7 +141,10 @@ databricks bundle validate -t dev
 # Deploy workflows
 databricks bundle deploy -t dev
 
-# Trigger the End-to-End Master Pipeline
+# Trigger the Official Real-Time Fraud Transaction Pipeline
+databricks bundle run fraud_transaction_pipeline -t dev
+
+# Or trigger the complete Master Pipeline (including initial reference ingestion)
 databricks bundle run fraud_master_pipeline_job -t dev
 ```
 

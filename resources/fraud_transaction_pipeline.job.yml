@@ -1,0 +1,71 @@
+resources:
+  jobs:
+    fraud_transaction_pipeline:
+      name: fraud_transaction_pipeline
+      tasks:
+        - task_key: staging_validation
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/01_staging_validation"
+            base_parameters:
+              ENTITY: transactions
+            source: WORKSPACE
+
+        - task_key: bronze_transactions
+          depends_on:
+            - task_key: staging_validation
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/03_bronze_transaction_stream"
+            source: WORKSPACE
+
+        - task_key: silver_transactions
+          depends_on:
+            - task_key: bronze_transactions
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/04_silver_transaction_stream"
+            source: WORKSPACE
+
+        - task_key: fraud_processing
+          depends_on:
+            - task_key: silver_transactions
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/05_fraud_processing"
+            source: WORKSPACE
+
+        - task_key: transaction_enrichment
+          depends_on:
+            - task_key: fraud_processing
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/07_transaction_enrichment"
+            source: WORKSPACE
+
+        - task_key: fraud_feature_assembly
+          depends_on:
+            - task_key: transaction_enrichment
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/08_fraud_feature_assembly"
+            source: WORKSPACE
+
+        - task_key: streaming_inference
+          depends_on:
+            - task_key: fraud_feature_assembly
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/10_streaming_inference"
+            source: WORKSPACE
+
+        - task_key: gold_fraud
+          depends_on:
+            - task_key: streaming_inference
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/11_gold_fraud"
+            source: WORKSPACE
+
+        - task_key: reconciliation_archive
+          depends_on:
+            - task_key: gold_fraud
+          notebook_task:
+            notebook_path: "/Workspace/Users/pavankumarverse@gmail.com/Real-Time Transaction Fraud & Anomaly Detection Platform/12_reconciliation_archive"
+            source: WORKSPACE
+
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
